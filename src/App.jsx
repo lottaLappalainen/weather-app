@@ -7,69 +7,36 @@ import Hourly from './pages/Hourly';
 import Daily from './pages/Daily';
 import Favorites from './pages/Favorites';
 import Homepage from './pages/Homepage';
-import { 
-  fetchCurrentForecast, 
-  fetchHourlyForecast, 
-  fetchDailyForecast, 
-  fetchTimeZone,
-  fetchGeocode 
-} from './services/weatherService';
+import { fetchGeocode, fetchTimeZone } from './services/weatherService';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
-  const [currentForecast, setCurrentForecast] = useState(null);
-  const [hourlyForecast, setHourlyForecast] = useState(null);
-  const [dailyForecast, setDailyForecast] = useState(null);
   const [cityName, setCityName] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [unit, setUnit] = useState('metric');
-  const [timeZone, setTimeZone] = useState('');
+  const [timeZone, setTimeZone] = useState(null); 
 
-  useEffect(() => {
-    if (coordinates.latitude && coordinates.longitude) {
-      fetchWeatherData(coordinates.latitude, coordinates.longitude);
-    }
-  }, [coordinates, unit]);
-
-  const fetchWeatherData = async (lat, lon) => {
+  const handleSearch = async (city) => {
+    if (!city.trim()) return; // Avoid empty searches
     try {
-      const [currentData, hourlyData, dailyData, timeZoneData] = await Promise.all([
-        fetchCurrentForecast(lat, lon, unit),
-        fetchHourlyForecast(lat, lon, unit),
-        fetchDailyForecast(lat, lon, unit),
-        fetchTimeZone(lat, lon),
-      ]);
-
-      setCurrentForecast(currentData);
-      setHourlyForecast(hourlyData);
-      setDailyForecast(dailyData);
-      setTimeZone(timeZoneData);
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-    }
-  };
-
-  const resetSearchQuery = () => {
-    setSearchQuery('');
-  };
-
-  const handleSearchSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const { lat, lon, name } = await fetchGeocode(searchQuery);
+      const { lat, lon, name } = await fetchGeocode(city.trim());
       setCoordinates({ latitude: lat, longitude: lon });
       setCityName(name.charAt(0).toUpperCase() + name.slice(1));
-      fetchWeatherData(lat, lon);
-      setRecentSearches((prev) => {
-        const newSearches = [name, ...prev.filter((item) => item.toLowerCase() !== name.toLowerCase())];
-        return newSearches.slice(0, 5);
+      setRecentSearches(prev => {
+        const newSearches = [name, ...prev.filter(item => item.toLowerCase() !== name.toLowerCase())];
+        return newSearches.slice(0, 5); // Limit to the latest 5 searches
       });
-      resetSearchQuery();
+      setSearchQuery(''); // Clear the search input
     } catch (error) {
       console.error('Error fetching geocode data:', error);
     }
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    handleSearch(searchQuery); // Use the new unified search function
   };
 
   const handleSearchChange = (event) => {
@@ -77,9 +44,9 @@ function App() {
   };
 
   const toggleFavorite = (city) => {
-    setFavorites((prevFavorites) => {
+    setFavorites(prevFavorites => {
       if (prevFavorites.includes(city)) {
-        return prevFavorites.filter((favorite) => favorite !== city);
+        return prevFavorites.filter(favorite => favorite !== city);
       } else {
         return [...prevFavorites, city];
       }
@@ -87,8 +54,23 @@ function App() {
   };
 
   const toggleUnit = () => {
-    setUnit((prevUnit) => (prevUnit === 'metric' ? 'imperial' : 'metric'));
+    setUnit(prevUnit => (prevUnit === 'metric' ? 'imperial' : 'metric'));
   };
+
+  useEffect(() => {
+    const fetchTimeZoneData = async () => {
+      if (coordinates.latitude && coordinates.longitude) {
+        try {
+          const timeZoneData = await fetchTimeZone(coordinates.latitude, coordinates.longitude);
+          setTimeZone(timeZoneData); 
+        } catch (error) {
+          console.error('Error fetching timezone data:', error);
+        }
+      }
+    };
+
+    fetchTimeZoneData();
+  }, [coordinates]); 
 
   return (
     <Router>
@@ -98,8 +80,8 @@ function App() {
           handleSearchChange={handleSearchChange}
           searchQuery={searchQuery}
           setCoordinates={setCoordinates}
-          cityName={cityName}
           setCityName={setCityName}
+          cityName={cityName}
           recentSearches={recentSearches}
           setRecentSearches={setRecentSearches}
           favorites={favorites}
@@ -108,65 +90,11 @@ function App() {
           toggleUnit={toggleUnit}
         />
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Homepage
-                handleSearchSubmit={handleSearchSubmit}
-                handleSearchChange={handleSearchChange}
-                searchQuery={searchQuery}
-                setCoordinates={setCoordinates}
-                setCityName={setCityName}
-                recentSearches={recentSearches}
-                setRecentSearches={setRecentSearches}
-              />
-            }
-          />
-          <Route
-            path="/Tanaan"
-            element={
-              <Today
-                currentForecast={currentForecast}
-                dailyForecast={dailyForecast}
-                unit={unit}
-                timeZone={timeZone} 
-              />
-            }
-          />
-          <Route
-            path="/Tunneittain"
-            element={
-              <Hourly
-                hourlyForecast={hourlyForecast}
-                unit={unit}
-                timeZone={timeZone} 
-              />
-            }
-          />
-          <Route
-            path="/10_paivaa"
-            element={
-              <Daily
-                dailyForecast={dailyForecast}
-                unit={unit}
-                timeZone={timeZone} 
-              />
-            }
-          />
-          <Route
-            path="/Suosikit"
-            element={
-              <Favorites
-                favorites={favorites}
-                setCoordinates={setCoordinates}
-                setCityName={setCityName}
-                setCurrentForecast={setCurrentForecast}
-                setHourlyForecast={setHourlyForecast}
-                setDailyForecast={setDailyForecast}
-                unit={unit}
-              />
-            }
-          />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/today" element={<Today coordinates={coordinates} unit={unit} timeZone={timeZone} />} />
+          <Route path="/hourly" element={<Hourly coordinates={coordinates} unit={unit} timeZone={timeZone} />} />
+          <Route path="/daily" element={<Daily coordinates={coordinates} unit={unit} timeZone={timeZone} />} />
+          <Route path="/favorites" element={<Favorites favorites={favorites} toggleFavorite={toggleFavorite} unit={unit} />} />
         </Routes>
       </div>
     </Router>

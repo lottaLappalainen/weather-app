@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import settingsIcon from '../assets/settings.png';
 import heartIcon from '../assets/heart.png';
 import filledHeartIcon from '../assets/heartFill.png';
-import { fetchGeocode, fetchCurrentForecast, fetchHourlyForecast, fetchDailyForecast } from '../services/weatherService'; // Import the geocode and weather services
 
 const MyNavbar = ({
   handleSearchSubmit,
@@ -28,65 +27,37 @@ const MyNavbar = ({
 
   useEffect(() => {
     setActiveLink(location.pathname);
-  }, [location.pathname, location]);
-
-  const handleSearchSubmitLocal = async (event) => {
-    event.preventDefault();
-
-    try {
-      const { lat, lon, name } = await fetchGeocode(searchQuery); 
-
-      setCoordinates({ latitude: lat, longitude: lon });
-      setCityName(name.charAt(0).toUpperCase() + name.slice(1)); 
-
-      const currentData = await fetchCurrentForecast(lat, lon, unit);
-      const hourlyData = await fetchHourlyForecast(lat, lon, unit);
-      const dailyData = await fetchDailyForecast(lat, lon, unit);
-
-      handleSearchSubmit(currentData, hourlyData, dailyData);
-
-      setRecentSearches((prev) => {
-        const newSearches = [name, ...prev.filter((item) => item.toLowerCase() !== name.toLowerCase())];
-        return newSearches.slice(0, 5);
-      });
-      handleSearchChange({ target: { value: '' } });
-      navigate('/Tanaan');
-      setShowDropdown(false);
-    } catch (error) {
-      console.error('Error fetching geocode data:', error);
-    }
-  };
-
-  const handleSearchChangeLocal = (event) => {
-    handleSearchChange(event);
-    const query = event.target.value;
-    if (query.length > 0) {
-      const filtered = recentSearches.filter((search) =>
-        search.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredSearch(filtered.length > 0 ? filtered[0] : '');
-      setShowDropdown(true);
-    } else {
-      setShowDropdown(false);
-    }
-  };
+  }, [location.pathname]);
 
   const handleRecentSearchClick = (search) => {
-    setShowDropdown(false);
-    handleSearchSubmitLocal({ preventDefault: () => {} });
+    setCoordinates({ latitude: null, longitude: null }); // Reset coordinates if needed
+    handleSearchSubmit(search); // Use the unified search handling
+    navigate('/today'); 
   };
 
   const handleHeartClick = () => {
-    toggleFavorite(cityName);
+    if (cityName && cityName.trim() !== '') {
+      toggleFavorite(cityName);
+    }
   };
 
   const handleSettingsClick = () => {
     setShowSettings((prev) => !prev);
   };
 
+  const handleSearchChangeLocal = (event) => {
+    handleSearchChange(event);
+    const value = event.target.value;
+    const filtered = recentSearches.filter((search) =>
+      search.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredSearch(filtered.length > 0 ? filtered[0] : ''); 
+    setShowDropdown(value.length > 0 && filtered.length > 0);
+  };
+
   return (
     <div className="navbar">
-      <form onSubmit={handleSearchSubmitLocal} className="search-form">
+      <form onSubmit={handleSearchSubmit} className="search-form">
         <div className="search-bar-container">
           <div className="app-logo"><Link to="/">Sää Sovellus</Link></div>
           <img
@@ -99,7 +70,7 @@ const MyNavbar = ({
           <div className="autocomplete-container">
             <input
               type="text"
-              value={searchQuery}
+              value={searchQuery} 
               onChange={handleSearchChangeLocal}
               placeholder="Hae..."
               className="search-input"
@@ -139,16 +110,16 @@ const MyNavbar = ({
         </div>
       )}
       <div className="nav-links">
-        <Link to="/Tanaan" className={activeLink === '/Tanaan' ? 'active' : ''}>
+        <Link to="/today" className={activeLink === '/today' ? 'active' : ''}>
           Tänään
         </Link>
-        <Link to="/Tunneittain" className={activeLink === '/Tunneittain' ? 'active' : ''}>
+        <Link to="/hourly" className={activeLink === '/hourly' ? 'active' : ''}>
           Tunneittain
         </Link>
-        <Link to="/10_paivaa" className={activeLink === '/10_paivaa' ? 'active' : ''}>
+        <Link to="/daily" className={activeLink === '/daily' ? 'active' : ''}>
           10 päivää
         </Link>
-        <Link to="/Suosikit" className={activeLink === '/Suosikit' ? 'active' : ''}>
+        <Link to="/favorites" className={activeLink === '/favorites' ? 'active' : ''}>
           Suosikit
         </Link>
       </div>

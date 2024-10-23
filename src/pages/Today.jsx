@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Today.css';
 import sunsetIcon from '../assets/sunset.png';
 import sunriseIcon from '../assets/sunrise.png';
+import { fetchCurrentForecast, fetchDailyForecast } from '../services/weatherService';
 
-const Today = ({ currentForecast, dailyForecast, unit, timeZone }) => {
+const Today = ({ coordinates, unit, timeZone }) => {
+
+  const [currentForecast, setCurrentForecast] = useState(null);
+  const [dailyForecast, setDailyForecast] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      setLoading(true);
+      try {
+        const { latitude, longitude } = coordinates;
+        const currentData = await fetchCurrentForecast(latitude, longitude, unit);
+        const dailyData = await fetchDailyForecast(latitude, longitude, unit);
+        setCurrentForecast(currentData);
+        setDailyForecast(dailyData);
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (coordinates) {
+      fetchWeatherData();
+    }
+  }, [coordinates, unit]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   if (!currentForecast || !dailyForecast || !timeZone) {
-    return <div className="no-forecast-message">Hae kaupunkia</div>
+    return <div className="no-forecast-message">Hae kaupunkia</div>;
   }
 
   const formatTime = (unixTimestamp) => {
@@ -16,11 +47,9 @@ const Today = ({ currentForecast, dailyForecast, unit, timeZone }) => {
   const currentDate = new Date((Date.now() + timeZone.gmtOffset * 1000) - 10800 * 1000);
   const currentFormattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const currentFormattedDate = currentDate.toLocaleDateString([], { day: 'numeric', month: 'long' });
-
-  const todayWeather = dailyForecast.list[0]; 
-
+  const todayWeather = dailyForecast.list[0];
   const temperatureUnit = unit === 'metric' ? '°C' : '°F';
-  const windSpeedUnit = unit === 'metric' ? 'm/s' : 'mph'; 
+  const windSpeedUnit = unit === 'metric' ? 'm/s' : 'mph';
 
   return (
     <section id="Tänään" className="tanaan-container">

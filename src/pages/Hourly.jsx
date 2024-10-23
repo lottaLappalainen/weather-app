@@ -1,7 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Hourly.css';
+import { fetchHourlyForecast } from '../services/weatherService';
 
-const Hourly = ({ hourlyForecast, timeZone, unit }) => {
+const Hourly = ({ coordinates, unit, timeZone }) => {
+  const [hourlyForecast, setHourlyForecast] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      setLoading(true);
+      try {
+        const { latitude, longitude } = coordinates;
+        const hourlyData = await fetchHourlyForecast(latitude, longitude, unit);
+        setHourlyForecast(hourlyData);
+      } catch (error) {
+        console.error('Error fetching hourly forecast:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (coordinates) {
+      fetchWeatherData();
+    }
+  }, [coordinates, unit]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!hourlyForecast || !timeZone) {
+    return <div className="no-forecast-message">Hae kaupunkia</div>;
+  }
+
   const isTomorrowHeaderNeeded = (timestamp) => {
     const hour = new Date((timestamp + timeZone.gmtOffset - 14400) * 1000).getUTCHours();
     return hour < 22 && hour > 20;
@@ -75,5 +106,4 @@ const Hourly = ({ hourlyForecast, timeZone, unit }) => {
     </section>
   );
 };
-
 export default Hourly;

@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Daily.css';
 import arrowDown from '../assets/arrowDown.png'; 
 import arrowUp from '../assets/arrowUp.png'; 
 import sunsetIcon from '../assets/sunset.png';
 import sunriseIcon from '../assets/sunrise.png';
+import { fetchDailyForecast } from '../services/weatherService';
 
-const Daily = ({ dailyForecast, unit, timeZone }) => {
+const Daily = ({ coordinates, unit, timeZone }) => {
+  const [dailyForecast, setDailyForecast] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(Array(dailyForecast?.list?.length || 0).fill(false));
 
   const toggleExpanded = (index) => {
@@ -15,6 +18,34 @@ const Daily = ({ dailyForecast, unit, timeZone }) => {
       return newState;
     });
   };
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      setLoading(true);
+      try {
+        const { latitude, longitude } = coordinates;
+        const dailyData = await fetchDailyForecast(latitude, longitude, unit);
+        setDailyForecast(dailyData);
+      } catch (error) {
+        console.error('Error fetching daily forecast:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (coordinates) {
+      fetchWeatherData();
+    }
+  }, [coordinates, unit]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!dailyForecast || !timeZone) {
+    return <div className="no-forecast-message">Hae kaupunkia</div>;
+  }
+
 
   const formatTime = (unixTimestamp) => {
     return new Date((unixTimestamp + timeZone.gmtOffset - 10800) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

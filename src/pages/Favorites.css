@@ -46,3 +46,6 @@
     color: #fff;
   }
   
+  .no-favorites-message {
+    font-weight: 600;
+  }

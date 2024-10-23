@@ -4,7 +4,8 @@ import './Homepage.css';
 import logo from '../assets/weather.png'; 
 import { fetchGeocode } from '../services/weatherService'; 
 
-const Homepage = ({ handleSearchSubmit, handleSearchChange, searchQuery, setCoordinates, setCityName, recentSearches, setRecentSearches }) => {
+const Homepage = ({ setCoordinates, setCityName, recentSearches, setRecentSearches }) => {
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredSearches, setFilteredSearches] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
@@ -18,26 +19,25 @@ const Homepage = ({ handleSearchSubmit, handleSearchChange, searchQuery, setCoor
       const { lat, lon, name } = geocodeData;
 
       setCoordinates({ latitude: lat, longitude: lon });
-      setCityName(name);
+      setCityName(name.charAt(0).toUpperCase() + name.slice(1));
       setRecentSearches((prev) => {
         const newSearches = [name, ...prev.filter(item => item.toLowerCase() !== name.toLowerCase())];
         return newSearches.slice(0, 5);
       });
 
-      navigate('/Tanaan');
+      navigate('/today'); 
     } catch (error) {
       console.error('Error fetching geocode data:', error);
     }
   };
 
-  const handleSearchSubmitLocal = async (event) => {
+  const handleSearchSubmit = (event) => {
     event.preventDefault();
-    await performSearch(searchQuery);
-    handleSearchSubmit(event); 
+    performSearch(searchQuery);
   };
 
-  const handleSearchChangeLocal = (event) => {
-    handleSearchChange(event);
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
     const query = event.target.value;
     if (query.length > 0) {
       const filtered = recentSearches.filter(search =>
@@ -50,8 +50,8 @@ const Homepage = ({ handleSearchSubmit, handleSearchChange, searchQuery, setCoor
     }
   };
 
-  const handleRecentSearchClick = async (city) => {
-    await performSearch(city);
+  const handleRecentSearchClick = (city) => {
+    performSearch(city);
   };
 
   return (
@@ -63,12 +63,12 @@ const Homepage = ({ handleSearchSubmit, handleSearchChange, searchQuery, setCoor
           <div> Sovellus </div>
         </div>
       </div>
-      <form onSubmit={handleSearchSubmitLocal} className="homepage-search-form">
+      <form onSubmit={handleSearchSubmit} className="homepage-search-form">
         <div className="autocomplete-container">
           <input
             type="text"
             value={searchQuery}
-            onChange={handleSearchChangeLocal}
+            onChange={handleSearchChange}
             placeholder="Hae kaupunkia"
             className="homepage-search-input"
           />
