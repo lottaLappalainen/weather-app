@@ -4,7 +4,7 @@ import './Homepage.css';
 import logo from '../assets/weather.png'; 
 import { fetchGeocode } from '../services/weatherService'; 
 
-const Homepage = ({ setCoordinates, setCityName, recentSearches, setRecentSearches }) => {
+const Homepage = ({ setCoordinates, setCityName, recentSearches, setRecentSearches }) => {  // Default value added here
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredSearches, setFilteredSearches] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);

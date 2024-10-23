@@ -90,7 +90,7 @@ function App() {
           toggleUnit={toggleUnit}
         />
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<Homepage setCoordinates={setCoordinates} setCityName={setCityName} recentSearches={recentSearches} setRecentSearches={setRecentSearches} />} />
           <Route path="/today" element={<Today coordinates={coordinates} unit={unit} timeZone={timeZone} />} />
           <Route path="/hourly" element={<Hourly coordinates={coordinates} unit={unit} timeZone={timeZone} />} />
           <Route path="/daily" element={<Daily coordinates={coordinates} unit={unit} timeZone={timeZone} />} />

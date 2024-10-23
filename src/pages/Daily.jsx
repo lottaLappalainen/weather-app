@@ -38,15 +38,6 @@ const Daily = ({ coordinates, unit, timeZone }) => {
     }
   }, [coordinates, unit]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!dailyForecast || !timeZone) {
-    return <div className="no-forecast-message">Hae kaupunkia</div>;
-  }
-
-
   const formatTime = (unixTimestamp) => {
     return new Date((unixTimestamp + timeZone.gmtOffset - 10800) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -56,7 +47,9 @@ const Daily = ({ coordinates, unit, timeZone }) => {
 
   return (
     <section id="Paivaa" className="paivaa-container">
-      {dailyForecast?.list && dailyForecast.list.length > 0 ? (
+      {loading ? (
+        <div className="loading-message">Ladataan säätietoja...</div>
+      ) : dailyForecast?.list && dailyForecast.list.length > 0 ? (
         dailyForecast.list.map((day, index) => {
           const date = new Date((day.dt + timeZone.gmtOffset - 14400) * 1000).toLocaleDateString('fi-FI', {
             weekday: 'long',
@@ -104,7 +97,7 @@ const Daily = ({ coordinates, unit, timeZone }) => {
           );
         })
       ) : (
-        <div className="no-forecast-message">Hae kaupunkia</div>
+        <div className="loading-message">Hae kaupunkia</div>
       )}
     </section>
   );
