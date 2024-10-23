@@ -4,34 +4,34 @@ import settingsIcon from '../assets/settings.png';
 import heartIcon from '../assets/heart.png';
 import filledHeartIcon from '../assets/heartFill.png';
 
-const MyNavbar = ({
-  handleSearchSubmit,
-  handleSearchChange,
-  searchQuery,
-  setCoordinates,
-  cityName,
-  setCityName,
-  recentSearches,
-  setRecentSearches,
-  favorites,
-  toggleFavorite,
-  unit,
-  toggleUnit,
-}) => {
-  const location = useLocation();
-  const [activeLink, setActiveLink] = useState(location.pathname);
-  const [filteredSearch, setFilteredSearch] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const navigate = useNavigate();
+  const MyNavbar = ({
+    handleSearchSubmit,
+    handleSearchChange,
+    searchQuery,
+    setSearchQuery,
+    cityName,
+    recentSearches,
+    favorites,
+    toggleFavorite,
+    unit,
+    toggleUnit,
+  }) => {
+    const location = useLocation();
+    const [activeLink, setActiveLink] = useState(location.pathname);
+    const [filteredSearch, setFilteredSearch] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
+    const navigate = useNavigate();
 
   useEffect(() => {
     setActiveLink(location.pathname);
   }, [location.pathname]);
 
   const handleRecentSearchClick = (search) => {
-    setCoordinates({ latitude: null, longitude: null }); // Reset coordinates if needed
-    handleSearchSubmit(search); // Use the unified search handling
+    console.log("search", search)
+    setSearchQuery(search); // Set the search query to the clicked recent search
+    handleSearchSubmit({ preventDefault: () => {} }, search); // Simulate form submission
+    setShowDropdown(false);
     navigate('/today'); 
   };
 

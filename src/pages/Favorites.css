@@ -49,3 +49,7 @@
   .no-favorites-message {
     font-weight: 600;
   }
+
+  .city-name {
+    align-items: center;
+  }

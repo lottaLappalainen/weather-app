@@ -34,9 +34,10 @@ function App() {
     }
   };
 
-  const handleSearchSubmit = (event) => {
+  const handleSearchSubmit = (event, search) => {
     event.preventDefault();
-    handleSearch(searchQuery); // Use the new unified search function
+    const searchValue = search || searchQuery;
+    handleSearch(searchValue); // Use the new unified search function
   };
 
   const handleSearchChange = (event) => {
@@ -78,12 +79,10 @@ function App() {
         <NavbarWithCondition
           handleSearchSubmit={handleSearchSubmit}
           handleSearchChange={handleSearchChange}
+          setSearchQuery={setSearchQuery}
           searchQuery={searchQuery}
-          setCoordinates={setCoordinates}
-          setCityName={setCityName}
           cityName={cityName}
           recentSearches={recentSearches}
-          setRecentSearches={setRecentSearches}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
           unit={unit}
