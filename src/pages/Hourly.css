@@ -1,0 +1,61 @@
+.tunneittain-container {
+    padding: 140px;
+    background: linear-gradient(to bottom, #F4EEFF, #DCD6F7, #A6B1E1, #424874);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hourly-weather {
+    background-color: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .hourly-weather-header {
+    font-weight: bold;
+    font-size: 17px;
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+    background-color: #A6B1E1;
+  }
+
+  .date {
+    background-color: #424874;
+    font-weight: 400;
+    font-style: italic;
+    color: white;
+    display: flex;
+    align-items: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    justify-content: space-between;
+  }
+  
+  .h-weather-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: right;
+  }
+  
+  .hourly-weather-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+  
+  .hourly-weather-row:nth-child(odd) {
+    background-color: #DCD6F7;
+  }
+
+  .no-forecast-message {
+    color: white;
+    font-weight: 500;
+    font-size: x-large;
+    padding: 190px;
+  }
+  

@@ -1,0 +1,99 @@
+.tanaan-container {
+  padding: 140px;
+  background: linear-gradient(to bottom, #F4EEFF, #DCD6F7, #A6B1E1, #424874);
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.current-weather, .today-weather {
+  background-color: white;
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 600px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.current-weather-header, .today-weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd; 
+}
+
+.d-temp {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.temp-and-icon {
+  align-items: center;
+}
+
+.c-weather-content, .today-weather-content {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-between;
+  text-align: right;
+}
+
+.current-weather-main {
+  display: flex;
+}
+
+.temperature {
+  font-size: 24px;
+}
+
+.temp-value {
+  font-size: 48px;
+}
+
+.temp-unit {
+  font-size: 24px;
+}
+
+.current-weather-details, .temperature-details {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.detail-value {
+  font-weight: bold;
+}
+
+.temp-high, .temp-low, .temp-morning, .temp-evening, .temp-night {
+  font-size: 25px;
+  font-weight: 400 !important;
+}
+
+.today-weather-content > div {
+  display: flex;
+}
+
+.sun-times {
+  display: flex;
+  width: 100%;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+.sunrise-time, .sunset-time {
+  font-weight: bold;
+}
+
+.sun-icon {
+  width: 50px;
+  height: 50px;
+  padding-right: 10px;
+}
+
+.today-date {
+  font-size: 20px;
+}
+
