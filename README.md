@@ -2,7 +2,7 @@
 
 A canon event in the programming journey: choosing weather application as an optional project
 
-Done with React and css. Were I to do this project today, I would rather use tailwind etc, instead of css, though the project helped with mastering flexbox.
+Done with React and css. Were I to do this project today, I would rather use tailwind css etc, though the project helped with mastering flexbox.
 
 ## Getting Started
 
